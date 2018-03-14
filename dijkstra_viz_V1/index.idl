@@ -3,7 +3,7 @@
 [Header
   title:"Dijkstra_viz_V1"
   subtitle:"Welcome to Idyll. Open index.idl to start writing"
-  author:"Your Name Here"
+  author:"Josh Pollock"
   authorLink:"https://idyll-lang.github.io" /]
 
 This is an Idyll file. Write text
@@ -19,6 +19,7 @@ Here is how you can use a variable:
 
 ```js
 var code = true;
+var foo = bar;
 ```
 
 And here is a custom component:
@@ -37,3 +38,14 @@ doesn't exist.
 [button onClick:`state++`]
   Click Me.
 [/button]
+
+[CircleWave /]
+[D3TypeScriptTest /]
+
+[var name:"color" value:"#000" /]
+
+[Force nodeColor:`color` /]
+
+[Button onClick:`color === '#000' ? color = '#ff0000' : color = '#000' `]
+Toggle Color
+[/Button]
