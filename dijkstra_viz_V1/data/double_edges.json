@@ -1,0 +1,45 @@
+{
+  "nodes": [
+    {
+      "id": "a",
+      "label": "a",
+      "radius": 20,
+      "fill": "none",
+      "outline": "none"
+    },
+    {
+      "id": "b",
+      "label": "b",
+      "radius": 20,
+      "fill": "none",
+      "outline": "none"
+    },
+    {
+      "id": "c",
+      "label": "c",
+      "radius": 20,
+      "fill": "none",
+      "outline": "none"
+    }
+  ],
+  "links": [
+    {
+      "source": "a",
+      "target": "b",
+      "weight": 10,
+      "type": "none"
+    },
+    {
+      "source": "b",
+      "target": "a",
+      "weight": 10,
+      "type": "none"
+    },
+    {
+      "source": "a",
+      "target": "c",
+      "weight": 10,
+      "type": "none"
+    }
+  ]
+}

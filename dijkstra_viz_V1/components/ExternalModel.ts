@@ -46,7 +46,7 @@ class ExternalModel implements EM {
 
     // todo: move this outside?
     function ticked() {
-      _this.ui.updatePositions();
+      _this.ui.updateUI(_this.graph);
     }
   }
 
@@ -56,12 +56,12 @@ class ExternalModel implements EM {
 
   mouseoverNode(node: esNode) {
     this.graph.nodes[this.findNode(node)].radius *= 1.1;
-    this.ui.updateSizes(this.graph);
+    this.ui.updateUI(this.graph);
   }
 
   mouseoutNode(node: esNode) {
     this.graph.nodes[this.findNode(node)].radius /= 1.1;
-    this.ui.updateSizes(this.graph);
+    this.ui.updateUI(this.graph);
   }
 
   // todo: I'm still not a fan of this ui
@@ -71,19 +71,19 @@ class ExternalModel implements EM {
     if (!this.source) {
       this.source = node.id;
       this.graph.nodes[this.findNode(node)].outline = 'source';
-      this.ui.updateOutlines(this.graph);
+      this.ui.updateUI(this.graph);
     // select target and run Dijkstra
     } else if (!this.target) {
       this.target = node.id;
       this.graph.nodes[this.findNode(node)].outline = 'target';
-      this.ui.updateOutlines(this.graph);
+      this.ui.updateUI(this.graph);
       console.log('run Dijkstra');
     // reset
     } else {
       this.source = null;
       this.target = null;
       this.graph.nodes = this.graph.nodes.map(n => ({...n, outline: 'none'}));
-      this.ui.updateOutlines(this.graph);
+      this.ui.updateUI(this.graph);
     }
   }
 

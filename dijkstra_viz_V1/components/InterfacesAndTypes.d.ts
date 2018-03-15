@@ -25,11 +25,11 @@ declare interface UI {
   initUI(es: ExternalState): void;
   // might just want to consolidate all of these into a single mega-method, perhaps still calling the component methods
   // todo: simulation is doing some spooky in-place manipulation
-  updatePositions(): void;
+  /* updatePositions(es: ExternalState): void;
   // this could do with a small version, however d3 doesn't seem to like small updates. harder to reason about batch though
   updateSizes(es: ExternalState): void;
-  updateOutlines(es: ExternalState): void;
-  // updateUI(es: ExternalState): void;
+  updateOutlines(es: ExternalState): void; */
+  updateUI(es: ExternalState): void;
 }
 
 /* ExternalModel Interface */

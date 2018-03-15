@@ -1,5 +1,6 @@
 export enum ARROW_COLORS {
-  none = "#aaa",
+  // none = "#aaa",
+  none = "#000",
   FRINGE = "maroon",
   pq = "#e84545",
   SPT = "#333333",
@@ -19,3 +20,5 @@ export enum CIRCLE_OUTLINE {
   source = "#4286f4",
   target = "orange"
 }
+
+export let ARROW_SIZE = 13;

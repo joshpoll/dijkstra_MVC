@@ -1,3 +1,4 @@
+import { ARROW_SIZE } from './Customization';
 
 import D3Component = require('idyll-d3-component');
 import d3 = require('d3');
@@ -25,7 +26,8 @@ class GraphUI extends D3Component implements UI {
     this.us = {circles: undefined, circleLabels: undefined, arrows: undefined};
 
     // todo: should load the file from idyll so don't have to worry about callbacks
-    this.em = new ExternalModel('./data/star.json', this);
+    // this.em = new ExternalModel('./data/star.json', this);
+    this.em = new ExternalModel('./data/double_edges.json', this);
   }
 
   // todo: move inside initUI?
@@ -51,8 +53,8 @@ class GraphUI extends D3Component implements UI {
         /* .attr('refX',0)
         .attr('refY',0) */
         .attr('orient','auto')
-        .attr('markerWidth',13)
-        .attr('markerHeight',13)
+        .attr('markerWidth', ARROW_SIZE)
+        .attr('markerHeight', ARROW_SIZE)
         .attr('xoverflow','visible')
         // prevents arrowhead from inheriting line stroke-width
         .attr('markerUnits','userSpaceOnUse')
@@ -75,7 +77,7 @@ class GraphUI extends D3Component implements UI {
         .style('fill', d => custom.CIRCLE_FILL[d.fill])
         .style('stroke', d => custom.CIRCLE_OUTLINE[d.outline])
         .style('stroke-width', '3px');
-
+// todo: move this under circles
       this.us.arrows =
         this.svg.append('g')
           .attr('class', 'arrows')
@@ -102,7 +104,7 @@ class GraphUI extends D3Component implements UI {
           .text(d => d.label)
           .style('fill', 'black');
 
-    /* add event handling */
+    /* add event handling. pushes actual logic to the external model */
     this.us.circles
       .on('mouseover', function(d: esNode) {
         _this.em.mouseoverNode(d);
@@ -118,17 +120,55 @@ class GraphUI extends D3Component implements UI {
       });
   }
 
-  updatePositions() {
+  updatePositions(es: ExternalState) {
     this.us.circles
       .attr('cx', d => d.x)
       .attr('cy', d => d.y);
     
     // todo: replace with more intelligent code that accounts for arrow heads and size of circles
+    let arrowPositions = (d) => {
+      let deltaX = d.target.x - d.source.x,
+          deltaY = d.target.y - d.source.y,
+          dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY),
+          normX = deltaX / dist,
+          normY = deltaY / dist;
+
+      let sourcePadding, targetPadding, doublePadding;
+
+      // todo: this test is probably wrong
+      if (es.links.some(l => l.source === d.target && l.target === d.source)) {
+        // todo: make a function of the padding.
+        // unfortunately, there is probably not a clean way to do this. at the very least, trig functions may be required
+        sourcePadding = 1 + d.source.radius - 3;
+        targetPadding = 1 + d.target.radius + ARROW_SIZE - 2;
+        doublePadding = 10;
+      } else {
+        sourcePadding = 1 + d.source.radius; // = 1 + 20 = 21
+        targetPadding = 1 + d.target.radius + ARROW_SIZE; // = 1 + 20 + 13 = 34
+        doublePadding = 0;
+      }
+      
+      return {
+        x1: d.source.x
+            + (sourcePadding * normX)
+            + (doublePadding * normY),
+        y1: d.source.y
+            + (sourcePadding * normY)
+            - (doublePadding * normX),
+        x2: d.target.x
+            - (targetPadding * normX)
+            + (doublePadding * normY),
+        y2: d.target.y
+            - (targetPadding * normY)
+            - (doublePadding * normX)
+      };
+    }
+
     this.us.arrows
-      .attr('x1', d => d.source.x)
-      .attr('y1', d => d.source.y)
-      .attr('x2', d => d.target.x)
-      .attr('y2', d => d.target.y);
+      .attr('x1', d => arrowPositions(d).x1)
+      .attr('y1', d => arrowPositions(d).y1)
+      .attr('x2', d => arrowPositions(d).x2)
+      .attr('y2', d => arrowPositions(d).y2);
 
     this.us.circleLabels
       .attr('x', d => d.x)
@@ -146,6 +186,12 @@ class GraphUI extends D3Component implements UI {
     this.us.circles
       .data(es.nodes)
       .style('stroke', d => custom.CIRCLE_OUTLINE[d.outline]);
+  }
+
+  updateUI(es: ExternalState) {
+    this.updateSizes(es);
+    this.updateOutlines(es);
+    this.updatePositions(es);
   }
 }
 
