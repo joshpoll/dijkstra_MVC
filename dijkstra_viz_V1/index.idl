@@ -1,52 +1,24 @@
-[meta title:"Dijkstra_viz_V1" description:"Short description of your project" /]
+[meta title:"Dijkstra Viz" description:"Case Study of MVC Reimagined" /]
 
 [Header
-  title:"Dijkstra_viz_V1"
-  subtitle:"Welcome to Idyll. Open index.idl to start writing"
+  title:"Dijkstra Viz"
+  subtitle:"Case Study of MVC Reimagined"
   author:"Josh Pollock"
   authorLink:"https://idyll-lang.github.io" /]
 
-This is an Idyll file. Write text
-as you please in here. To add interactivity,
-you can add  different components to the text.
+This is an improved implementation of the Dijkstra Visualization I created for the Autumn 2017 iteration of UW's Data Visualization class (CSE 442). This project uses D3, Idyll, and TypeScript.
 
-Here is how you can use a variable:
+A few things contributed to the clunkiness of the original implementation. Firstly, I was unable to get TypeScript working and also integrated the project with Idyll at a very late stage. More importantly, I didn't have a good design model to work off of and was new to D3 so I had to think quite hard about how to design my project. I ultimately made decisions that seemed in line with the D3 code I found online and in the O'Reilly book but were ultimately bad practice for managing large projects.
 
-[var name:"exampleVar" value:5 /]
+This project maintains three connected models of the graph data. The first one is the model used in SVG. The second is the external model which is an abstracted version of the SVG model. One might imagine this level as a DSL for working with graphs in D3. The third is the internal model with runs Dijkstra's algorithm. Some of the major differences between the second and third models are that the second model uses a node-link representation whereas the third uses an adjacency list. Moreover, the second model cares about node positions, but the third model does not.
 
-[Range min:0 max:10 value:exampleVar /]
-[Display value:exampleVar /]
+The multi-stage nature of this projection separates concerns so each level exists relatively independently of the other. For example, the second level could be used as a graph DSL in another project. In fact, it would be possible to rip out the third level and replace it with something that runs Prim's, for example, without much trouble.
 
-```js
-var code = true;
-var foo = bar;
-```
+I still have to figure out how to add stuff like the priority queue visualization into this project, since it will most likely live in its own 1st and 2nd models, but be included in the 3rd model.
 
-And here is a custom component:
+I should also write up information about the round-trip nature of the project, where events start at the UI, weave through all the models, and ultimately end up back at the UI as changes. I _think_ this will also allow for easy invertibility i.e. there must be isomorphisms between the models; however, this would require position info to somehow live in the 3rd model (I think?). Also in the back of my mind I have those visualizations that allow you to make edits on one pane and see those edits on another like the brush on many view thing.
 
-[CustomComponent /]
+One other advantage of this separation, and an area for future work, is that it may allow for more precise reasoning about user tasks and mental models since they can be split up into reasoning about each of the three distinct models. I'm still not sure how to write spec for tasks that interfaces implement. Should it be "mousedown on a circle" or "select a node" or "select a source" or something else? Identical actions have several semantic interpretations (does that last phrase have any meaning?).
 
-You can use standard html tags if a
-component with the same name
-doesn't exist.
-
-* *markdown* syntax is supported.
-
-[var name:"state" value:0 /]
-
-[CustomD3Component state:state /]
-[button onClick:`state++`]
-  Click Me.
-[/button]
-
-[CircleWave /]
 [GraphUI /]
 [GraphUI /]
-
-[var name:"color" value:"#000" /]
-
-[Force nodeColor:`color` /]
-
-[Button onClick:`color === '#000' ? color = '#ff0000' : color = '#000' `]
-Toggle Color
-[/Button]
