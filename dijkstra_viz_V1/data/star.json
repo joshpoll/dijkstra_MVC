@@ -1,0 +1,129 @@
+{
+  "nodes": [
+    {
+      "id": "a",
+      "label": "a",
+      "x": 0,
+      "y": 0.2,
+      "radius": 20,
+      "fill": "none",
+      "outline": "none"
+    },
+    {
+      "id": "b",
+      "label": "b",
+      "x": 0.2,
+      "y": 0.3,
+      "radius": 20,
+      "fill": "none",
+      "outline": "none"
+    },
+    {
+      "id": "c",
+      "label": "c",
+      "x": 0.5,
+      "y": 0.4,
+      "radius": 20,
+      "fill": "none",
+      "outline": "none"
+    },
+    {
+      "id": "d",
+      "label": "d",
+      "x": 0.8,
+      "y": 0,
+      "radius": 20,
+      "fill": "none",
+      "outline": "none"
+    },
+    {
+      "id": "e",
+      "label": "e",
+      "x": 0.5,
+      "y": 0.5,
+      "radius": 20,
+      "fill": "none",
+      "outline": "none"
+    },
+    {
+      "id": "f",
+      "label": "f",
+      "x": 0.5,
+      "y": 0.9,
+      "radius": 20,
+      "fill": "none",
+      "outline": "none"
+    },
+    {
+      "id": "g",
+      "label": "g",
+      "x": 0.6,
+      "y": 0.9,
+      "radius": 20,
+      "fill": "none",
+      "outline": "none"
+    }
+  ],
+  "links": [
+    {
+      "source": "a",
+      "target": "b",
+      "weight": 5,
+      "type": "none"
+    },
+    {
+      "source": "b",
+      "target": "c",
+      "weight": 10,
+      "type": "none"
+    },
+    {
+      "source": "c",
+      "target": "d",
+      "weight": 10,
+      "type": "none"
+    },
+    {
+      "source": "c",
+      "target": "e",
+      "weight": 5,
+      "type": "none"
+    },
+    {
+      "source": "c",
+      "target": "f",
+      "weight": 10,
+      "type": "none"
+    },
+    {
+      "source": "e",
+      "target": "g",
+      "weight": 10,
+      "type": "none"
+    },
+    {
+      "source": "f",
+      "target": "e",
+      "weight": 7,
+      "type": "none"
+    },
+    {
+      "source": "d",
+      "target": "g",
+      "weight": 12,
+      "type": "none"
+    },
+    {
+      "source": "d",
+      "target": "a",
+      "weight": 20,
+      "type": "none"
+    },
+    {
+      "source": "g",
+      "target": "f",
+      "weight": 11,
+      "type": "none"
+    }
+  ]
+}

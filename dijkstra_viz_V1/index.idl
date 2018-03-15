@@ -40,7 +40,8 @@ doesn't exist.
 [/button]
 
 [CircleWave /]
-[D3TypeScriptTest /]
+[GraphUI /]
+[GraphUI /]
 
 [var name:"color" value:"#000" /]
 
