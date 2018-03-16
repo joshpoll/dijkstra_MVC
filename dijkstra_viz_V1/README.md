@@ -2,7 +2,9 @@ Reimplements (possibly a subset of) dijkstra viz functionality with a better mod
 
 todo: change files to singleton classes?
 
-currently GraphUI <-> ExternalState
+becoming GraphUI -> ExternalModel -> InternalModel -> ExternalModel -> GraphUI.
+Some things short circuit and are just GraphUI <-> ExternalModel.
+To bubble up from InternalModel, call update__. To push down, call a specific method.
 
 done: arrow labels
 todo: add internal model and redo pipeline to GraphUI -> ExternalModel -> InternalModel -> ExternalModel -> GraphUI.
@@ -14,4 +16,4 @@ todo: clicking on background should do something
 todo: remove text highlighting from labels
 todo: consider splitting up interfaces into updater and updatee? Does this distinction even make sense?
 done: rename esLink and esNode to link and node. remove isLink and isNode
-todo: REALLY BAD. clicking on nodes seems to stop arrows from resizing on mouseover. the round trip is desyncing links somehow.
+todo: REALLY BAD. clicking on nodes seems to stop arrows from resizing on mouseover. the round trip is desyncing links somehow. Appears to be caused by improper mixing of link source and target types. Sometimes a string, sometimes a node. I'm not sure why. CAUSE: simulation should live at the UI level. The simulation mutates its nodes and links as it sees fit and this is the cause of the overwrite of the data. In truth, the External Model should not need to know about the simulation. That's Graph UI's job. If Graph UI handles it then it can mutate its own representation. This may come at a cost since it requires elements that move together to be grouped (probably) and so there is less freedom with overlaying, but this may be a good thing at least in the short term. A longer term solution might be to add _another_ IR just for handling force simulation, but that requires more work and I don't think the payoff will be worth it at the moment. I will revisit this later.

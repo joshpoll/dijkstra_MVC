@@ -14,5 +14,6 @@ export function isGraph_to_esGraph(isGraph: isGraph): esGraph {
   esGraph.nodes = [ ...isGraph.keys() ]; // coerces key iterator to list
   esGraph.links = [].concat(...isGraph.values()); // coerces and flattens
 
+  console.log(esGraph);
   return esGraph;
 }

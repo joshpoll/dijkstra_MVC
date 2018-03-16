@@ -79,7 +79,7 @@ class ExternalModel implements EM {
   // todo: I'm still not a fan of this ui
   // returns directly to UI unless running Dijkstra, in which case calls Dijkstra, which will bubble up changes.
   // todo: maybe persistent state like source and target should be pushed down to internal model even though it doesn't matter whether the information is deferred or not.
-  // todo: I'm learning towards pushing down to IM since this is an actual state change and it should happen immediately. IM should always be aware of the latest version of this state. But should it always be the one figuring how to deal with it?
+  // todo: I'm leaning towards pushing down to IM since this is an actual state change and it should happen immediately. IM should always be aware of the latest version of this state. But should it always be the one figuring how to deal with it?
   mousedownNode(node: node) {
     // this.es.graph.nodes[this.findNode(node)].outline = 'none';
     // select source
