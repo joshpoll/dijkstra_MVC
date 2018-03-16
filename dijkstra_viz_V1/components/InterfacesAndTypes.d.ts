@@ -1,16 +1,30 @@
+declare type TODO = any;
+
 /* UI State */
 // todo: these types carry little semantic value
-declare type circles = any
+declare type circles = any;
 declare type circleLabels = any;
 declare type arrows = any;
+declare type arrowLabels = any;
 
-declare type UIState = { circles: circles, circleLabels: circleLabels, arrows: arrows };
+declare type UIState = { circles: circles, circleLabels: circleLabels, arrows: arrows, arrowLabels: arrowLabels };
+
+/* node link model */
+declare type node = { id: string, label: string, x: number, y: number, radius: number, fill: string, outline: string };
+declare type link = { source: string, target: string, weight: number, type: string };
 
 /* External Model State */
-declare type esNode = { id: string, label: string, x: number, y: number, radius: number, fill: string, outline: string };
-declare type esLink = { source: string, target: string, weight: number, type: string };
+declare type esGraph = {nodes: node[], links: link[]};
 
-declare type ExternalState = { nodes: esNode[], links: esLink[] };
+declare type ExternalState = { graph: esGraph, source?: string, target?: string };
+
+/* Internal Model State */
+/* declare type isNode = TODO;
+declare type isLink = {from: isNode, to: isNode, weight: number}; */
+// declare type isGraph = Map<isNode, isLink[]>;
+declare type isGraph = Map<node, link[]>;
+
+declare type InternalState = { graph: isGraph, source?: string, target?: string };
 
 /* UI Interface */
 declare interface UI {
@@ -35,9 +49,19 @@ declare interface UI {
 /* ExternalModel Interface */
 declare interface EM {
   // todo: this should probably be small changes
-  mouseoverNode(node: esNode): void;
-  mouseoutNode(node: esNode): void;
-  mousedownNode(node: esNode): void;
-  mouseupNode(node: esNode): void;
+  mouseoverNode(node: node): void;
+  mouseoutNode(node: node): void;
+  mousedownNode(node: node): void;
+  mouseupNode(node: node): void;
+  initEM(is: InternalState): void;
+  updateEM(is: InternalState): void;
   // updateES(): void;
+}
+
+/* InternalModel Interface */
+declare interface IM {
+  // todo
+  setSource(node: node): void;
+  setTarget(node: node): void;
+  clearSourceAndTarget(): void;
 }

@@ -1,5 +1,8 @@
+import { MOUSEOVER_ZOOM } from './Customization';
 import $ = require('jquery');
 import d3 = require('d3');
+import { isGraph_to_esGraph } from './RepresentationConversion';
+import InternalModel = require('./InternalModel');
 
 /* 
   ExternalState keeps track of the user-facing node-link graph representation.
@@ -9,13 +12,11 @@ import d3 = require('d3');
  */
 class ExternalModel implements EM {
   // todo: might want a keyword modifying this
-  graph: {nodes: esNode[], links: esLink[]};
+  es: ExternalState = {graph: undefined, source: null, target: null};
   // todo: give better type
   simulation: d3.Simulation<any, undefined>;
   ui: UI;
-
-  source?: string
-  target?: string
+  im: IM;
   
   constructor(graphPath: string, ui: UI) {
     // required for callbacks
@@ -23,72 +24,97 @@ class ExternalModel implements EM {
     
     this.ui = ui;
 
-    $.getJSON(graphPath, function(graph: {nodes: esNode[], links: esLink[]}) {
-      _this.graph = graph;
-      console.log(_this.graph);
+    this.im = new InternalModel('./data/double_edges.json', this);
+  }
 
-      _this.simulation =
-        d3.forceSimulation()/* .alpha(_this.alpha) */
-          .force("link", d3.forceLink().id(d => d.id).distance(d => Math.abs(d.weight) * 15)/* .distance(150) */.strength(0.5))
-          .force("charge", d3.forceManyBody().strength(-100))
-          .force("center", d3.forceCenter(_this.ui.width / 2, _this.ui.height / 2));
+  initSimulation() {
+    this.simulation =
+      d3.forceSimulation()/* .alpha(_this.alpha) */
+        .force("link", d3.forceLink().id(d => d.id).distance(d => Math.abs(d.weight) * 15)/* .distance(150) */.strength(0.5))
+        .force("charge", d3.forceManyBody().strength(-100))
+        .force("center", d3.forceCenter(this.ui.width / 2, this.ui.height / 2));
 
-      _this.simulation
-        .nodes(_this.graph.nodes)
-        // todo: how to update positions?
-        .on("tick", ticked);
+    this.simulation
+      .nodes(this.es.graph.nodes)
+      // todo: how to update positions?
+      .on("tick", ticked);
 
-      _this.simulation.force("link")
-        .links(_this.graph.links);
+    this.simulation.force("link")
+      .links(this.es.graph.links);
 
-      _this.ui.initUI(_this.graph);
-    });
-
-    // todo: move this outside?
+    let _this = this;
     function ticked() {
-      _this.ui.updateUI(_this.graph);
+      _this.ui.updateUI(_this.es);
     }
   }
 
-  private findNode(node: esNode) {
-    return this.graph.nodes.findIndex(n => n === node);
+  initEM(is: InternalState) {
+    this.es.graph = isGraph_to_esGraph(is.graph);
+
+    this.initSimulation();
+
+    this.ui.initUI(this.es);
   }
 
-  mouseoverNode(node: esNode) {
-    this.graph.nodes[this.findNode(node)].radius *= 1.1;
-    this.ui.updateUI(this.graph);
+  private findNode(node: node) {
+    return this.es.graph.nodes.findIndex(n => n === node);
   }
 
-  mouseoutNode(node: esNode) {
-    this.graph.nodes[this.findNode(node)].radius /= 1.1;
-    this.ui.updateUI(this.graph);
+  // transient. returns directly to UI
+  // todo: maybe I should enforce that this also passes down to internal model
+  // todo: maybe this shouldn't leave GraphUI at all.
+  // that seems reasonable
+  // now it seems like methods should just be dummies and pass through if they don't do anything fancy
+  // but what method would they call if passing to IM?
+  mouseoverNode(node: node) {
+    // default behavior (really should pass to IM?)
+    this.ui.updateUI(this.es);
+  }
+
+  mouseoutNode(node: node) {
+    // default behavior (really should pass to IM?)
+    this.ui.updateUI(this.es);
   }
 
   // todo: I'm still not a fan of this ui
-  mousedownNode(node: esNode) {
-    this.graph.nodes[this.findNode(node)].outline = 'none';
+  // returns directly to UI unless running Dijkstra, in which case calls Dijkstra, which will bubble up changes.
+  // todo: maybe persistent state like source and target should be pushed down to internal model even though it doesn't matter whether the information is deferred or not.
+  // todo: I'm learning towards pushing down to IM since this is an actual state change and it should happen immediately. IM should always be aware of the latest version of this state. But should it always be the one figuring how to deal with it?
+  mousedownNode(node: node) {
+    // this.es.graph.nodes[this.findNode(node)].outline = 'none';
     // select source
-    if (!this.source) {
-      this.source = node.id;
-      this.graph.nodes[this.findNode(node)].outline = 'source';
-      this.ui.updateUI(this.graph);
+    if (!this.es.source) {
+      this.im.setSource(node);
+      // this.es.source = node.id;
+      // this.es.graph.nodes[this.findNode(node)].outline = 'source';
+      // this.ui.updateUI(this.es);
     // select target and run Dijkstra
-    } else if (!this.target) {
-      this.target = node.id;
-      this.graph.nodes[this.findNode(node)].outline = 'target';
-      this.ui.updateUI(this.graph);
+    } else if (!this.es.target) {
+      this.im.setTarget(node);
+      // this.es.target = node.id;
+      // this.es.graph.nodes[this.findNode(node)].outline = 'target';
+      // this.ui.updateUI(this.es);
       console.log('run Dijkstra');
     // reset
     } else {
-      this.source = null;
-      this.target = null;
-      this.graph.nodes = this.graph.nodes.map(n => ({...n, outline: 'none'}));
-      this.ui.updateUI(this.graph);
+      this.im.clearSourceAndTarget();
+      /* this.es.source = null;
+      this.es.target = null;
+      this.es.graph.nodes = this.es.graph.nodes.map(n => ({...n, outline: 'none'}));
+      this.ui.updateUI(this.es); */
     }
   }
 
-  mouseupNode(node: esNode) {
+  mouseupNode(node: node) {
     // not sure we need to do anything here
+    this.ui.updateUI(this.es); // default behavior... for now
+  }
+
+  updateEM(is: InternalState) {
+    this.es.graph = isGraph_to_esGraph(is.graph);
+    this.es.source = is.source;
+    this.es.target = is.target;
+    this.ui.updateUI(this.es);
   }
 }
 
