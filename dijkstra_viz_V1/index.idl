@@ -21,4 +21,4 @@ I should also write up information about the round-trip nature of the project, w
 One other advantage of this separation, and an area for future work, is that it may allow for more precise reasoning about user tasks and mental models since they can be split up into reasoning about each of the three distinct models. I'm still not sure how to write spec for tasks that interfaces implement. Should it be "mousedown on a circle" or "select a node" or "select a source" or something else? Identical actions have several semantic interpretations (does that last phrase have any meaning?).
 
 [GraphUI /]
-[GraphUI /]
+// [GraphUI /]

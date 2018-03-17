@@ -1,17 +1,19 @@
 declare type TODO = any;
 
-/* UI State */
-// todo: these types carry little semantic value
-declare type circles = any;
-declare type circleLabels = any;
-declare type arrows = any;
-declare type arrowLabels = any;
-
-declare type UIState = { circles: circles, circleLabels: circleLabels, arrows: arrows, arrowLabels: arrowLabels };
-
-/* node link model */
-declare type node = { id: string, label: string, x: number, y: number, radius: number, fill: string, outline: string };
+/* node link model (EM, IM) */
+// a mixture of style information and graph information
+declare type node = { id: string, label: string, radius: number, fill: string, outline: string };
 declare type link = { source: string, target: string, weight: number, type: string };
+
+// todo: maybe this should be eliminated and node-label should be used instead
+/* circle arrow model (UI) */
+// much closer to the actual HTML. supports simulation
+declare type circle = { id: string, label: string, radius: number, fill: string, outline: string, x: number, y: number, vx: number, vy: number }
+declare type arrow = { source: circle, target: circle, weight: number, fill: string }
+
+/* UI State */
+declare type uiGraph = { circles: circle[], arrows: arrow[] };
+declare type UIState = {graph: uiGraph, domComponents: {circles: any, circleLabels: any, arrows: any, arrowLabels: any}};
 
 /* External Model State */
 declare type esGraph = {nodes: node[], links: link[]};
@@ -19,12 +21,11 @@ declare type esGraph = {nodes: node[], links: link[]};
 declare type ExternalState = { graph: esGraph, source?: string, target?: string };
 
 /* Internal Model State */
-/* declare type isNode = TODO;
-declare type isLink = {from: isNode, to: isNode, weight: number}; */
-// declare type isGraph = Map<isNode, isLink[]>;
 declare type isGraph = Map<node, link[]>;
 
 declare type InternalState = { graph: isGraph, source?: string, target?: string };
+
+declare type inputGraph = esGraph;
 
 /* UI Interface */
 declare interface UI {
@@ -53,6 +54,7 @@ declare interface EM {
   mouseoutNode(node: node): void;
   mousedownNode(node: node): void;
   mouseupNode(node: node): void;
+  ticked(): void;
   initEM(is: InternalState): void;
   updateEM(is: InternalState): void;
   // updateES(): void;
@@ -64,4 +66,5 @@ declare interface IM {
   setSource(node: node): void;
   setTarget(node: node): void;
   clearSourceAndTarget(): void;
+  updateNode(node: node): void;
 }
